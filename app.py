@@ -34,5 +34,11 @@ def currentjobs():
     jobList = connection.fetchall()
     return render_template("currentjoblist.html", job_list = jobList)    
 
+@app.route("/oldjobs")
+def oldjobs():
+    connection = getCursor()
+    connection.execute("SELECT job_id,customer,job_date FROM job where completed=0;")
+    jobList = connection.fetchall()
+    return render_template("currentjoblist.html", job_list = jobList)    
 
 

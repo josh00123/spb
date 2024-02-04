@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Curent Job List</h2>
+<h2>Current Job List</h2>
 
 <!-- code to display list of jobs-->
 <table>
@@ -9,12 +9,14 @@
         <th>Job ID</th>
         <th>Customer Name</th>
         <th>Date</th>
+        <th>Action</th>
     </tr>
     {% for job in job_list %}
         <tr>
             {% for field in job %}
                 <td>{{field}}</td>
             {% endfor %}
+            <td><a href="{{ url_for('job_details', job_id=job.job_id) }}">View Details</a></td>
         </tr>
     {% endfor %}
 </table>

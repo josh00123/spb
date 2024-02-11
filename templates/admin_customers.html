@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Customer List</h2>
+
+<!-- code to display list of customers -->
+<table>
+    <tr>
+        <th>Customer ID</th>
+        <th>First Name</th>
+        <th>Surname</th>
+    </tr>
+    {% for customer in customers %}
+        <tr>
+            <td>{{ customer[0] }}</td> <!-- Assuming customer[0] is Customer ID -->
+            <td>{{ customer[1] }}</td> <!-- Assuming customer[1] is First Name -->
+            <td>{{ customer[2] }}</td> <!-- Assuming customer[2] is Surname -->
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

@@ -81,5 +81,13 @@ def calculate_job_total_cost(job_id):
     total_cost = total_services_cost + total_parts_cost
     connection.execute("UPDATE job SET total_cost = %s WHERE job_id = %s;", (total_cost, job_id))
 
+@app.route("/admin/customers")
+def admin_customers():
+    cursor = getCursor()
+    query = "SELECT customer_id, first_name, surname FROM customer ORDER BY surname, first_name;"
+    cursor.execute(query)
+    customers = cursor.fetchall() 
+    return render_template("admin_customers.html", customers=customers)
+
 if __name__ == "__main__":
     app.run(debug=True)

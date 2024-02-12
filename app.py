@@ -30,7 +30,7 @@ def currentjobs():
 @app.route("/oldjobs")
 def oldjobs():
     connection = getCursor()
-    connection.execute("SELECT job_id, customer, job_date FROM job WHERE completed = 0;")
+    connection.execute("SELECT job_id, customer, job_date FROM job WHERE completed = 1;")
     jobList = connection.fetchall()
     return render_template("currentjoblist.html", job_list=jobList)
 
@@ -84,10 +84,26 @@ def calculate_job_total_cost(job_id):
 @app.route("/admin/customers")
 def admin_customers():
     cursor = getCursor()
-    query = "SELECT customer_id, first_name, surname FROM customer ORDER BY surname, first_name;"
+    query = "SELECT customer_id, first_name, family_name FROM customer ORDER BY family_name, first_name;"
     cursor.execute(query)
     customers = cursor.fetchall() 
     return render_template("admin_customers.html", customers=customers)
+
+@app.route('/admin/customers/search', methods=['GET', 'POST'])
+def search_customers():
+    if request.method == 'POST':
+        search_term = request.form['search_term']
+        cursor = getCursor()
+        query = """
+        SELECT customer_id, first_name, family_name 
+        FROM customer 
+        WHERE first_name LIKE %s OR family_name LIKE %s 
+        ORDER BY family_name, first_name;
+        """
+        cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
+        customers = cursor.fetchall()
+        return render_template('admin_search_customers.html', customers=customers)
+    return render_template('admin_search_customers.html', customers=[])
 
 if __name__ == "__main__":
     app.run(debug=True)

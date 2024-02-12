@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add New Customer</h2>
+
+<form action="{{ url_for('add_customer') }}" method="post">
+    <input type="text" name="first_name" placeholder="First Name" required class="form-input">
+    <input type="text" name="family_name" placeholder="Surname" required class="form-input">
+    <input type="email" name="email" placeholder="Email" required class="form-input">
+    <input type="text" name="phone" placeholder="Phone" required class="form-input">
+    <input type="submit" value="Add Customer" class="form-submit">
+</form>
+
+{% endblock %}

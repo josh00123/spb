@@ -105,5 +105,22 @@ def search_customers():
         return render_template('admin_search_customers.html', customers=customers)
     return render_template('admin_search_customers.html', customers=[])
 
+@app.route('/admin/customers/add', methods=['GET', 'POST'])
+def add_customer():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        family_name = request.form['family_name']
+        email = request.form['email']
+        phone = request.form['phone']
+        cursor = getCursor()
+        query = """
+        INSERT INTO customer (first_name, family_name, email, phone) 
+        VALUES (%s, %s, %s, %s);
+        """
+        cursor.execute(query, (first_name, family_name, email, phone))
+        return redirect(url_for('admin_customers'))
+    return render_template('add_customer.html')
+
+
 if __name__ == "__main__":
     app.run(debug=True)

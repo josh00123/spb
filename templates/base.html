@@ -8,13 +8,8 @@
     </head>
 
     <body>
-      <nav>
-            <h1>Selwyn Panel Beaters</h1>
-            <ul>
-                <li><a href="{{ url_for('home') }}">Current Jobs</a></li>
-            </ul>
-          </nav>
-          <section class="content">
+      {% include 'components/navbar.html' %}
+          <section class="container">
             <header>
               {% block header %}{% endblock %}
             </header>

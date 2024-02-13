@@ -1,22 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Customer List</h2>
+<div class="mt-4">
+    <h2>Customer List</h2>
 
-<!-- code to display list of customers -->
-<table>
-    <tr>
-        <th>Customer ID</th>
-        <th>First Name</th>
-        <th>Surname</th>
-    </tr>
-    {% for customer in customers %}
+    <div class="mt-4 mb-4">
+        <form action="{{ url_for('admin_customers') }}" method="get">
+            <input type="text" name="search" placeholder="Search by name" required>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
+    <!-- code to display list of customers -->
+    <table class="table table-striped mt-4">
         <tr>
-            <td>{{ customer.customer_id }}</td>
-            <td>{{ customer.first_name }}</td>
-            <td>{{ customer.family_name }}</td>
+            <th>Customer ID</th>
+            <th>First Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Phone</th>
         </tr>
-    {% endfor %}
-</table>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer[0] }}</td>
+            <td>{{ customer[1] }}</td>
+            <td>{{ customer[2] }}</td>
+            <td>{{ customer[3] }}</td>
+            <td>{{ customer[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
 {% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mt-4">
+    <h2 class="mb-4">Add New Part</h2>
+
+    <form action="{{ url_for('part') }}" method="post">
+        <div class="form-group mb-2">
+            <label for="part_name">Part Name</label>
+            <input type="text" name="part_name" id="part_name" placeholder="Part Name" required
+                class="form-control">
+            <div class="invalid-feedback">
+                Please provide a valid part name.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="part_cost">Part cost</label>
+            <input type="number" name="part_cost" id="part_cost" placeholder="Part cost" required
+                class="form-control">
+            <div class="invalid-feedback">
+                Please provide a valid cost.
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">Add Part</button>
+    </form>
+</div>
+{% endblock %}

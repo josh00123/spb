@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="mt-4">
+    <h2>Bills List</h2>
+
+    <table class="table table-striped">
+        <tr>
+            <th scope="col">Job Date</th>
+            <th scope="col">Total Cost</th>
+            <th scope="col">Is Paid</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Email</th>
+        </tr>
+        {% for bill in bills %}
+        <tr>
+            <td {% if bill[5] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{{ bill[0] }}</td>
+            <td>{% if not bill[1] %}{% else %}{{ bill[1] }}{% endif %}</td>
+            <td>{% if bill[2] %}Paid{% else %}{% if bill[5] == 'red' and bill[1] %}Overdue{% else %}Unpaid{% endif %}{% endif %}</td>
+            <td>{{ bill[3] }}</td>
+            <td>{{ bill[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

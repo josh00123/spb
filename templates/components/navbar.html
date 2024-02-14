@@ -11,9 +11,6 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Current Jobs</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('oldjobs') }}">Old Jobs</a>
-                </li>
                 {% endif %}
                 {% if 'admin' in request.url %}
                 <li class="nav-item">

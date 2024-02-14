@@ -5,6 +5,8 @@ import connect
 
 app = Flask(__name__)
 
+app.secret_key = 'sdfiweksdifwerijsdkfjiwe'
+
 dbconn = None
 connection = None
 
@@ -32,21 +34,7 @@ def currentjobs():
        j.job_date, j.total_cost
         FROM job j 
         JOIN customer c ON j.customer = c.customer_id 
-        WHERE j.completed = 0;
-        """)
-    jobList = connection.fetchall()
-    return render_template("currentjoblist.html", job_list=jobList)
-
-
-@app.route("/oldjobs")
-def oldjobs():
-    connection = getCursor()
-    connection.execute("""SELECT j.job_id, 
-       CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.family_name, '')) AS full_name, 
-            j.job_date, j.total_cost
-        FROM job j 
-        JOIN customer c ON j.customer = c.customer_id 
-        WHERE j.completed = 1;
+        WHERE j.completed = 0 ORDER BY j.job_date;
         """)
     jobList = connection.fetchall()
     return render_template("currentjoblist.html", job_list=jobList)
@@ -65,19 +53,20 @@ def job_details(job_id):
             # Add services and parts to the job
             service_id = request.form.get('selected_service')
             part_id = request.form.get('selected_part')
-            qty = request.form.get('qty')
+            service_qty = request.form.get('service_qty')
+            part_qty = request.form.get('part_qty')
 
             if service_id:
+                if service_qty == '':
+                    service_qty = 0
                 connection.execute(
-                    "INSERT INTO job_service (job_id, service_id, qty) VALUES (%s, %s, %s);", (job_id, service_id, qty))
+                    "INSERT INTO job_service (job_id, service_id, qty) VALUES (%s, %s, %s);", (job_id, service_id, service_qty))
             if part_id:
+                if part_qty == '':
+                    part_qty = 0
                 connection.execute(
-                    "INSERT INTO job_part (job_id, part_id, qty) VALUES (%s, %s, %s);", (job_id, part_id, qty))
-
-            # Mark the job as completed
-            if request.form.get('complete_job'):
-                connection.execute(
-                    "UPDATE job SET completed = 1 WHERE job_id = %s;", (job_id,))
+                    "INSERT INTO job_part (job_id, part_id, qty) VALUES (%s, %s, %s);", (job_id, part_id, part_qty))
+                
             # Calculate job total cost
             calculate_job_total_cost(job_id)
 
@@ -92,14 +81,22 @@ def job_details(job_id):
         "SELECT p.part_name, jp.qty, p.cost FROM job_part jp JOIN part p ON jp.part_id = p.part_id WHERE jp.job_id = %s;", (job_id,))
     parts_used = connection.fetchall()
 
-    connection.execute("SELECT * FROM service;")
+    connection.execute("SELECT * FROM service ORDER BY service_name;")
     services = connection.fetchall()
 
-    connection.execute("SELECT * FROM part;")
+    connection.execute("SELECT * FROM part ORDER BY part_name;")
     parts = connection.fetchall()
 
-    return render_template("job_details.html", job=job, services=services, parts=parts, services_used=services_used, parts_used=parts_used)
+    connection.execute("SELECT total_cost FROM job WHERE job_id=%s;", (job_id,))
+    total_cost = connection.fetchone()
 
+    return render_template("job_details.html", job=job, services=services, parts=parts, services_used=services_used, parts_used=parts_used, total_cost=total_cost)
+
+@app.route('/mark_as_complete/<int:job_id>', methods=['POST'])
+def mark_as_complete(job_id):
+    connection = getCursor()
+    connection.execute("UPDATE job SET completed = 1 WHERE job_id = %s;", (job_id,))
+    return redirect(url_for('currentjobs'))
 
 def calculate_job_total_cost(job_id):
     connection = getCursor()
@@ -118,7 +115,7 @@ def calculate_job_total_cost(job_id):
     connection.execute(
         "UPDATE job SET total_cost = %s WHERE job_id = %s;", (total_cost, job_id))
 
-    return redirect(url_for('oldjobs'))
+    return redirect(url_for('currentjobs'))
 
 @app.route("/admin")
 @app.route("/admin/customers")
@@ -127,15 +124,14 @@ def admin_customers():
     search_term = request.args.get('search', '')
     if not search_term == '':
         query = """
-        SELECT customer_id, first_name, family_name,
+        SELECT first_name, family_name, email, phone
         FROM customer 
         WHERE first_name LIKE %s OR family_name LIKE %s 
         ORDER BY family_name, first_name;
         """
-        cursor.execute(query, ('%' + search_term +
-                       '%', '%' + search_term + '%'))
+        cursor.execute(query, ('%' + search_term + '%', '%' + search_term + '%'))
     else:
-        query = "SELECT customer_id, first_name, family_name, email, phone FROM customer ORDER BY family_name, first_name;"
+        query = "SELECT first_name, family_name, email, phone FROM customer ORDER BY family_name, first_name;"
         cursor.execute(query)
 
     customers = cursor.fetchall()
@@ -149,6 +145,9 @@ def add_customer():
         family_name = request.form['family_name']
         email = request.form['email']
         phone = request.form['phone']
+        if len(phone) > 11:
+            flash("Phone number can't be longer than 11 characters.", "error")
+            return redirect(url_for('add_customer'))
         cursor = getCursor()
         query = """
         INSERT INTO customer (first_name, family_name, email, phone) 
@@ -192,7 +191,7 @@ def schedule_job():
 
         query = "INSERT INTO job (job_date, customer, completed, paid) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (job_date, customer_id, 0, 0))
-
+        flash('The job is scheduled successfully', 'success')
         return redirect(url_for('schedule_job'))
 
     query = "SELECT customer_id, first_name, family_name FROM customer ORDER BY family_name, first_name;"
@@ -206,9 +205,17 @@ def schedule_job():
 @app.route('/admin/bills')
 def admin_bills():
     cursor = getCursor()
-    query = """
-    SELECT job.job_date, job.job_id, c.customer_id, CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.family_name, '')) AS full_name, job.completed, job.total_cost FROM job JOIN customer c ON job.customer = c.customer_id WHERE job.paid = %s;"""
-    cursor.execute(query, (0,))
+    search_term = request.args.get('search', '')
+    if not search_term == '':
+        query = """
+        SELECT job.job_id, job.job_date, CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.family_name, '')) AS full_name, job.completed, job.total_cost FROM job JOIN customer c ON job.customer = c.customer_id WHERE job.paid = %s AND c.first_name LIKE %s OR family_name LIKE %s ORDER BY job.job_date, c.family_name, c.first_name;
+        """
+        cursor.execute(query, (0, '%' + search_term + '%', '%' + search_term + '%'))
+    else:
+        query = """
+                SELECT job.job_id, job.job_date, CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.family_name, '')) AS full_name, job.completed, job.total_cost FROM job JOIN customer c ON job.customer = c.customer_id WHERE job.paid = %s ORDER BY job.job_date, c.family_name, c.first_name;
+                """
+        cursor.execute(query, (0,))
     bills = cursor.fetchall()
 
     return render_template('admin_bills.html', bills=bills)
@@ -226,13 +233,23 @@ def mark_as_paid():
 @app.route('/admin/billing_history')
 def billing_history():
     cursor = getCursor()
-    query = """
-    SELECT j.job_date, j.total_cost, j.paid, CONCAT(IFNULL(c.first_name, ''), ' ', IFNULL(c.family_name, '')) AS full_name, c.email, CASE WHEN DATE_ADD(j.job_date, INTERVAL 14 DAY) < CURDATE() THEN 'red' ELSE 'black' END AS highlight_color FROM job j JOIN customer c ON j.customer = c.customer_id ORDER BY c.family_name, c.first_name, j.job_date;
-    """
-
+    query = "SELECT customer_id, first_name, family_name, email FROM customer ORDER BY family_name, first_name;"
     cursor.execute(query)
-    data = cursor.fetchall()
-    return render_template('billing_history.html', bills=data)
+    customers = cursor.fetchall()
+    customer_details = []
+    data = []
+    for customer in customers:
+        query = """
+    SELECT j.job_date, j.total_cost, j.paid, CASE WHEN DATE_ADD(j.job_date, INTERVAL 14 DAY) < CURDATE() THEN 'red' ELSE 'black' END AS highlight_color FROM job j WHERE j.customer = %s ORDER BY j.job_date;
+    """
+        cursor.execute(query, (customer[0],))
+        jobs = cursor.fetchall()
+
+        if len(jobs) > 0:
+            customer_details.append(customer)
+            data.append(jobs)
+
+    return render_template('billing_history.html',  customers=customer_details, bills=data)
 
 
 if __name__ == "__main__":

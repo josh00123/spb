@@ -4,24 +4,43 @@
 <div class="mt-4">
     <h2>Bills List</h2>
 
+    {% for customer in customers %}
+    <table class="table table-success table-striped">
+        <thead class="table-header">
+            <tr>
+                <th scope="col" class="col-md-4">First Name</th>
+                <th scope="col" class="col-md-4">Family Name</th>
+                <th scope="col" class="col-md-4">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ customer[1] }}</td>
+            <td>{{ customer[2] }}</td>
+            <td>{{ customer[3] }}</td>
+        </tr>
+    </tbody>
+    </table>
+
     <table class="table table-striped">
-        <tr>
-            <th scope="col">Job Date</th>
-            <th scope="col">Total Cost</th>
-            <th scope="col">Is Paid</th>
-            <th scope="col">Customer Name</th>
-            <th scope="col">Email</th>
+        <thead class="table-header">
+            <th scope="col" class="col-md-4">Job Date</th>
+            <th scope="col" class="col-md-4">Total Cost</th>
+            <th scope="col" class="col-md-4">Is Paid</th>
         </tr>
-        {% for bill in bills %}
+        </thead>
+        {% for bill in bills[loop.index-1] %}
+        <tbody>
         <tr>
-            <td {% if bill[5] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{{ bill[0] }}</td>
-            <td>{% if not bill[1] %}{% else %}{{ bill[1] }}{% endif %}</td>
-            <td>{% if bill[2] %}Paid{% else %}{% if bill[5] == 'red' and bill[1] %}Overdue{% else %}Unpaid{% endif %}{% endif %}</td>
-            <td>{{ bill[3] }}</td>
-            <td>{{ bill[4] }}</td>
+            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{{ bill[0] }}</td>
+            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{% if bill[1] %}{{ bill[1] }}{% else %}-{% endif %}</td>
+            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{% if bill[2] %}Paid{% else %}{% if bill[3] == 'red' and bill[1] %}Overdue{% else %}Unpaid{% endif %}{% endif %}</td>
         </tr>
+    </tbody>
         {% endfor %}
     </table>
+
+    {% endfor %}
 </div>
 
 {% endblock %}

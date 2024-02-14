@@ -6,13 +6,11 @@
 
     <table class="table">
         <tr>
-            <th scope="col">Job ID</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Date</th>
             <th scope="col">Completed</th>
         </tr>
         <tr>
-            <td>{{ job[0] }}</td>
             <td>{{ job[1] }}</td>
             <td>{{ job[2] }}</td>
             <td>{{ "Yes" if job[3] else "No" }}</td>
@@ -34,6 +32,11 @@
         </div>
 
         <div class="form-group">
+            <label for="service_qty">Service Quantity:</label>
+            <input type="number" step="1" min="0" class="form-control" name="service_qty" id="service_qty">
+        </div>
+
+        <div class="form-group">
             <label for="selected_part">Select Part:</label>
             <select class="form-control" name="selected_part" id="selected_part">
                 <option value="">---Select---</option>
@@ -44,8 +47,8 @@
         </div>
 
         <div class="form-group">
-            <label for="qty">Quantity:</label>
-            <input type="text" class="form-control" name="qty" id="qty" required>
+            <label for="part_qty">Part Quantity:</label>
+            <input type="number" step="1" min="0" class="form-control" name="part_qty" id="part_qty">
         </div>
         <br>
         <button type="submit" class="btn btn-primary">Add</button>
@@ -72,17 +75,16 @@
                 </ul>
             </div>
         </div>
+        <div class="mt-4">
+            <span><b>Total Cost:</b> ${{ total_cost[0] }}</span>
+        </div>
     </div>
     {% endif %}
 
 
     {% if not job[3] %}
-    <form class="mb-4" method="post" action="{{ url_for('job_details', job_id=job[0]) }}">
-        <div class="form-group form-check mt-4 mb-4">
-            <input class="form-check-input" type="checkbox" id="complete_job" name="complete_job" value="1">
-            <label class="form-check-label" for="complete_job">Mark Job as Completed</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Save and Complete</button>
+    <form class="mb-4 mt-4" method="post" action="{{ url_for('mark_as_complete', job_id=job[0]) }}">
+        <button type="submit" class="btn btn-primary">Complete</button>
     </form>
     {% endif %}
 </div>

@@ -4,11 +4,16 @@
 <div class="mt-4">
     <h2>Bills List</h2>
 
+    <div class="mt-4 mb-4">
+        <form action="{{ url_for('admin_bills') }}" method="get">
+            <input type="text" name="search" placeholder="Search by name" required>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
     <table class="table table-striped">
         <tr>
             <th scope="col">Date</th>
-            <th scope="col">Job Id</th>
-            <th scope="col">Customer Id</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Completed</th>
             <th scope="col">Total Cost ($)</th>
@@ -16,18 +21,11 @@
         </tr>
         {% for bill in bills %}
         <tr>
-            {% for field in bill %}
-                {% if loop.index == 5 %}
-                    <td>{% if field %}Yes{% else %}No{% endif %}</td>
-                {% endif %}
-                {% if loop.index == 6 %}
-                    <td>{% if field %}{{ field }}{% else %}-{% endif %}</td>
-                {% endif %}
-                {% if loop.index != 5 and loop.index != 6 %}
-                <td>{{field}}</td>
-                {% endif %}
-            {% endfor %}
-            <td><a href="{{ url_for('mark_as_paid', bill_id=bill[1]) }}">Mark as paid</a></td>
+            <td>{{ bill[1] }}</td>
+            <td>{{ bill[2] }}</td>
+            <td>{% if bill[3] %}Yes{% else %}No{% endif %}</td>
+            <td>{% if bill[4] %}{{ bill[4] }}{% else %}-{% endif %}</td>
+            <td><a href="{{ url_for('mark_as_paid', bill_id=bill[0]) }}">Mark as paid</a></td>
         </tr>
         {% endfor %}
     </table>

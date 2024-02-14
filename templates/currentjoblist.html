@@ -6,7 +6,6 @@
 
     <table class="table table-striped">
         <tr>
-            <th scope="col">Job ID</th>
             <th scope="col">Customer Name</th>
             <th scope="col">Date</th>
             <th scope="col">Total Cost</th>
@@ -14,7 +13,6 @@
         </tr>
         {% for job in job_list %}
         <tr>
-            <td>{{ job[0] }}</td>
             <td>{{ job[1] }}</td>
             <td>{{ job[2] }}</td>
             <td>{% if job[3] %}{{ job[3] }}{% else %}-{% endif %}</td>

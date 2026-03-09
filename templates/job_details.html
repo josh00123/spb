@@ -2,92 +2,131 @@
 {% block content %}
 
 <div class="mt-4">
-    <h2>Job Details</h2>
+    <h2>工单详情</h2>
 
-    <table class="table">
-        <tr>
-            <th scope="col">Customer Name</th>
-            <th scope="col">Date</th>
-            <th scope="col">Completed</th>
-        </tr>
-        <tr>
-            <td>{{ job[1] }}</td>
-            <td>{{ job[2] }}</td>
-            <td>{{ "Yes" if job[3] else "No" }}</td>
-        </tr>
-    </table>
+    <!-- 基本信息 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>工单信息</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th>客户姓名：</th>
+                    <td><strong>{{ job[1] }}</strong></td>
+                </tr>
+                <tr>
+                    <th>预约日期：</th>
+                    <td>{{ job[2] }}</td>
+                </tr>
+                <tr>
+                    <th>状态：</th>
+                    <td>
+                        {% if job[3] %}
+                            <span class="badge bg-success">已完成</span>
+                        {% else %}
+                            <span class="badge bg-warning">进行中</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
     {% if not job[3] %}
-    <h3>Add Services and Parts</h3>
-
-    <form class="mb-4" method="post" action="{{ url_for('job_details', job_id=job[0]) }}">
-        <div class="form-group">
-            <label for="selected_service">Select Service:</label>
-            <select class="form-control" name="selected_service" id="selected_service">
-                <option value="">---Select---</option>
-                {% for service in services %}
-                <option value="{{ service[0] }}">{{ service[1] }}</option>
-                {% endfor %}
-            </select>
+    <!-- 添加服务配件表单 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>添加服务与配件</h5>
         </div>
-
-        <div class="form-group">
-            <label for="service_qty">Service Quantity:</label>
-            <input type="number" step="1" min="0" class="form-control" name="service_qty" id="service_qty">
-        </div>
-
-        <div class="form-group">
-            <label for="selected_part">Select Part:</label>
-            <select class="form-control" name="selected_part" id="selected_part">
-                <option value="">---Select---</option>
-                {% for part in parts %}
-                <option value="{{ part[0] }}">{{ part[1] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="part_qty">Part Quantity:</label>
-            <input type="number" step="1" min="0" class="form-control" name="part_qty" id="part_qty">
-        </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Add</button>
-    </form>
-    {% endif %}
-
-    {% if services_used or parts_used %}
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Services Used</h3>
-                <ul class="list-group">
-                    {% for service in services_used %}
-                    <li class="list-group-item">{{ service[0] }} - Quantity: {{ service[1] }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h3>Parts Used</h3>
-                <ul class="list-group">
-                    {% for part in parts_used %}
-                    <li class="list-group-item">{{ part[0] }} - Quantity: {{ part[1] }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <div class="mt-4">
-            <span><b>Total Cost:</b> ${{ total_cost[0] }}</span>
+        <div class="card-body">
+            <form class="row g-3" method="post" action="{{ url_for('job_details', job_id=job[0]) }}">
+                <div class="col-md-6">
+                    <label for="selected_service" class="form-label">选择服务：</label>
+                    <select class="form-select" name="selected_service" id="selected_service">
+                        <option value="">---请选择---</option>
+                        {% for service in services %}
+                        <option value="{{ service[0] }}">{{ service[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="service_qty" class="form-label">服务数量：</label>
+                    <input type="number" step="1" min="0" class="form-control" name="service_qty" id="service_qty" value="1">
+                </div>
+                <div class="col-md-6">
+                    <label for="selected_part" class="form-label">选择配件：</label>
+                    <select class="form-select" name="selected_part" id="selected_part">
+                        <option value="">---请选择---</option>
+                        {% for part in parts %}
+                        <option value="{{ part[0] }}">{{ part[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="part_qty" class="form-label">配件数量：</label>
+                    <input type="number" step="1" min="0" class="form-control" name="part_qty" id="part_qty" value="1">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">添加项目</button>
+                </div>
+            </form>
         </div>
     </div>
     {% endif %}
 
+    <!-- 已使用服务配件 -->
+    {% if services_used or parts_used %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>已使用服务</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for service in services_used %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ service[0] }}</span>
+                        <span class="badge bg-info">数量：{{ service[1] }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>已使用配件</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for part in parts_used %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ part[0] }}</span>
+                        <span class="badge bg-info">数量：{{ part[1] }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    {% if total_cost %}
+    <div class="alert alert-success mt-4">
+        <h5>工单总费用： <strong>¥{{ "%.2f"|format(total_cost[0]) }}</strong></h5>
+    </div>
+    {% endif %}
+    {% endif %}
 
+    <!-- 完成工单按钮 -->
     {% if not job[3] %}
-    <form class="mb-4 mt-4" method="post" action="{{ url_for('mark_as_complete', job_id=job[0]) }}">
-        <button type="submit" class="btn btn-primary">Complete</button>
-    </form>
+    <div class="mt-4">
+        <form method="post" action="{{ url_for('mark_as_complete', job_id=job[0]) }}" class="d-inline">
+            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('确认完成此工单？');">
+                ✅ 完成工单
+            </button>
+        </form>
+    </div>
     {% endif %}
 </div>
-
 
 {% endblock %}

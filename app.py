@@ -91,6 +91,7 @@ def home():
     return redirect("/currentjobs")
 
 @app.route("/currentjobs")
+@login_required
 def currentjobs():
     connection = getCursor()
     connection.execute("""SELECT j.job_id, 

@@ -10,29 +10,101 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans SC', sans-serif; }
-        .flash { 
-            margin: 20px 0; 
-            padding: 15px; 
-            border-radius: 8px; 
-        }
+        .flash { margin: 20px 0; padding: 15px; border-radius: 8px; }
         .flash-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .flash-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .navbar-brand { font-weight: 700 !important; }
+        .user-badge { font-size: 0.85em; }
     </style>
 </head>
 
 <body class="bg-light">
-    {% include 'components/navbar.html' %}
+    <!-- 豪华导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-sm sticky-top">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold fs-4" href="{{ url_for('home') }}">
+                🚗 安途配件
+                <span class="badge bg-danger ms-1">管理系统</span>
+            </a>
+            
+            <!-- 汉堡按钮 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- 导航菜单 -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- 当前工单（所有用户可见） -->
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded-pill mx-1 {% if request.endpoint == 'currentjobs' or request.endpoint == 'home' %}active bg-white text-primary shadow-sm{% endif %}" 
+                           href="{{ url_for('currentjobs') }}">
+                            📋 当前工单
+                        </a>
+                    </li>
+                    
+                    <!-- 管理员专属菜单 -->
+                    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle px-3 py-2 rounded-pill mx-1" href="#" 
+                           role="button" data-bs-toggle="dropdown">
+                            👨‍💼 管理员中心
+                        </a>
+                        <ul class="dropdown-menu shadow">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_customers') }}">👥 客户管理</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('add_customer') }}">➕ 新增客户</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('service') }}">🛠️ 新增服务</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('part') }}">🔧 新增配件</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('schedule_job') }}">📅 预约工单</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_bills') }}">💰 未付账单</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('billing_history') }}">📊 账单历史</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- 用户状态 & 登录 -->
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <!-- 已登录用户 -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle user-badge px-3 py-2 rounded-pill" href="#" 
+                           role="button" data-bs-toggle="dropdown">
+                            👤 {{ current_user.username }}
+                            <span class="badge bg-{{ 'success' if current_user.role == 'admin' else 'warning' }}">
+                                {{ '管理员' if current_user.role == 'admin' else '技术员' }}
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu-end dropdown-menu shadow">
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">🚪 退出登录</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <!-- 未登录 -->
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-2 rounded-pill btn btn-outline-light" href="{{ url_for('login') }}">
+                            🔐 登录
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
     
+    <!-- 主内容 -->
     <main class="container my-4">
-        <header>
-            {% block header %}{% endblock %}
-        </header>
+        <header>{% block header %}{% endblock %}</header>
         
-        <!-- Flash 消息美化 -->
+        <!-- 美化 Flash 消息 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="flash flash-{{ 'success' if category == 'success' else 'error' }} alert alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show mb-4" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>

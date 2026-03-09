@@ -1,40 +1,40 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Selwyn Panel Beaters</a>
+        <a class="navbar-brand" href="#">安途汽车配件商店管理系统</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="切换导航">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if 'admin' not in request.url %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Current Jobs</a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">当前工单</a>
                 </li>
                 {% endif %}
                 {% if 'admin' in request.url %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin_customers') }}">Customers</a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin_customers') }}">客户管理</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('add_customer') }}">Add Customer</a>
+                    <a class="nav-link" href="{{ url_for('add_customer') }}">新增客户</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('service') }}">Add Service</a>
+                    <a class="nav-link" href="{{ url_for('service') }}">新增服务</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('part') }}">Add Part</a>
+                    <a class="nav-link" href="{{ url_for('part') }}">新增配件</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('schedule_job') }}">Schedule Job</a>
+                    <a class="nav-link" href="{{ url_for('schedule_job') }}">预约工单</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin_bills') }}">Unpaid Bills</a>
+                    <a class="nav-link" href="{{ url_for('admin_bills') }}">未付账单</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('billing_history') }}">Billing History</a>
+                    <a class="nav-link" href="{{ url_for('billing_history') }}">账单历史</a>
                 </li>
-                  {% endif %}
+                {% endif %}
             </ul>
         </div>
     </div>

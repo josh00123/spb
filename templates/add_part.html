@@ -2,28 +2,28 @@
 {% block content %}
 
 <div class="mt-4">
-    <h2 class="mb-4">Add New Part</h2>
+    <h2 class="mb-4">新增配件</h2>
 
     <form action="{{ url_for('part') }}" method="post">
         <div class="form-group mb-2">
-            <label for="part_name">Part Name</label>
-            <input type="text" name="part_name" id="part_name" placeholder="Part Name" required
+            <label for="part_name">配件名称</label>
+            <input type="text" name="part_name" id="part_name" placeholder="如：机油滤清器" required
                 class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid part name.
+                请填写配件名称。
             </div>
         </div>
 
         <div class="form-group">
-            <label for="part_cost">Part Cost</label>
-            <input type="number" name="part_cost" id="part_cost" placeholder="Part Cost" required
+            <label for="part_cost">单价（元）</label>
+            <input type="number" step="0.01" min="0" name="part_cost" id="part_cost" placeholder="0.00" required
                 class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid cost.
+                请填写有效单价。
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-4">Add Part</button>
+        <button type="submit" class="btn btn-primary mt-4">新增配件</button>
     </form>
 </div>
 {% endblock %}

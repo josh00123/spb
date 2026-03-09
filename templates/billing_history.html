@@ -2,44 +2,43 @@
 {% block content %}
 
 <div class="mt-4">
-    <h2>Bills List</h2>
+    <h2>账单历史</h2>
 
     {% for customer in customers %}
-    <table class="table table-success table-striped">
-        <thead class="table-header">
+    <!-- 客户信息卡片 -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>{{ customer[1] }} {{ customer[2] }} ({{ customer[3] }})</h5>
+        </div>
+    </div>
+
+    <!-- 该客户账单列表 -->
+    <table class="table table-striped mb-4">
+        <thead class="table-dark">
             <tr>
-                <th scope="col" class="col-md-4">First Name</th>
-                <th scope="col" class="col-md-4">Family Name</th>
-                <th scope="col" class="col-md-4">Email</th>
+                <th scope="col" class="col-md-4">工单日期</th>
+                <th scope="col" class="col-md-4">总费用（元）</th>
+                <th scope="col" class="col-md-4">状态</th>
             </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>{{ customer[1] }}</td>
-            <td>{{ customer[2] }}</td>
-            <td>{{ customer[3] }}</td>
-        </tr>
-    </tbody>
-    </table>
-
-    <table class="table table-striped">
-        <thead class="table-header">
-            <th scope="col" class="col-md-4">Job Date</th>
-            <th scope="col" class="col-md-4">Total Cost</th>
-            <th scope="col" class="col-md-4">Is Paid</th>
-        </tr>
-        </thead>
         {% for bill in bills[loop.index-1] %}
-        <tbody>
-        <tr>
-            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{{ bill[0] }}</td>
-            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{% if bill[1] %}{{ bill[1] }}{% else %}-{% endif %}</td>
-            <td {% if bill[3] == 'red' and not bill[2] %}class="text-danger"{% endif %} >{% if bill[2] %}Paid{% else %}{% if bill[3] == 'red' and bill[1] %}Overdue{% else %}Unpaid{% endif %}{% endif %}</td>
+        <tr {% if bill[3] == 'red' and not bill[2] %}class="table-danger"{% endif %}>
+            <td>{{ bill[0] }}</td>
+            <td>{% if bill[1] %}{{ "%.2f"|format(bill[1]) }}{% else %}-{% endif %}</td>
+            <td>
+                {% if bill[2] %}
+                    <span class="badge bg-success">已支付</span>
+                {% elif bill[3] == 'red' %}
+                    <span class="badge bg-danger">逾期未付</span>
+                {% else %}
+                    <span class="badge bg-warning">未支付</span>
+                {% endif %}
+            </td>
         </tr>
-    </tbody>
         {% endfor %}
+        </tbody>
     </table>
-
     {% endfor %}
 </div>
 

@@ -2,32 +2,37 @@
 {% block content %}
 
 <div class="mt-4">
-    <h2>Bills List</h2>
+    <h2>未付账单列表</h2>
 
     <div class="mt-4 mb-4">
-        <form action="{{ url_for('admin_bills') }}" method="get">
-            <input type="text" name="search" placeholder="Search by name" required>
-            <input type="submit" value="Search">
+        <form action="{{ url_for('admin_bills') }}" method="get" class="d-flex">
+            <input type="text" name="search" placeholder="按客户姓名搜索" class="form-control me-2">
+            <input type="submit" value="搜索" class="btn btn-outline-primary">
         </form>
     </div>
 
     <table class="table table-striped">
-        <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Customer Name</th>
-            <th scope="col">Completed</th>
-            <th scope="col">Total Cost ($)</th>
-            <th scope="col">Action</th>
-        </tr>
+        <thead>
+            <tr>
+                <th scope="col">日期</th>
+                <th scope="col">客户姓名</th>
+                <th scope="col">已完成</th>
+                <th scope="col">总费用（元）</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for bill in bills %}
         <tr>
             <td>{{ bill[1] }}</td>
             <td>{{ bill[2] }}</td>
-            <td>{% if bill[3] %}Yes{% else %}No{% endif %}</td>
-            <td>{% if bill[4] %}{{ bill[4] }}{% else %}-{% endif %}</td>
-            <td><a href="{{ url_for('mark_as_paid', bill_id=bill[0]) }}">Mark as paid</a></td>
+            <td>{% if bill[3] == 1 %}是{% else %}否{% endif %}</td>
+            <td>{% if bill[4] %}{{ "%.2f"|format(bill[4]) }}{% else %}-{% endif %}</td>
+            <td><a href="{{ url_for('mark_as_paid', bill_id=bill[0]) }}" 
+                   class="btn btn-sm btn-success">标记已付</a></td>
         </tr>
         {% endfor %}
+        </tbody>
     </table>
 </div>
 

@@ -17,6 +17,13 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+# 角色导航处理器
+@app.context_processor
+def inject_user_role():
+    if current_user.is_authenticated:
+        return dict(current_user=current_user)
+    return dict(current_user=None)
+
 # 用户类
 class User(UserMixin):
     def __init__(self, id, username, role):

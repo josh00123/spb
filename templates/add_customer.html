@@ -2,42 +2,42 @@
 {% block content %}
 
 <div class="mt-4">
-    <h2 class="mb-4">Add New Customer</h2>
+    <h2 class="mb-4">新增客户</h2>
 
     <form action="{{ url_for('add_customer') }}" method="post">
         <div class="form-group">
-            <label for="first_name">First Name</label>
-            <input type="text" name="first_name" id="first_name" placeholder="First Name" required class="form-control">
+            <label for="first_name">名</label>
+            <input type="text" name="first_name" id="first_name" placeholder="请输入名字" required class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid first name.
+                请填写有效名字。
             </div>
         </div>
 
         <div class="form-group">
-            <label for="family_name">Surname</label>
-            <input type="text" name="family_name" id="family_name" placeholder="Surname" required class="form-control">
+            <label for="family_name">姓</label>
+            <input type="text" name="family_name" id="family_name" placeholder="请输入姓氏" required class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid surname.
+                请填写有效姓氏。
             </div>
         </div>
 
         <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" placeholder="Email" required class="form-control">
+            <label for="email">电子邮箱</label>
+            <input type="email" name="email" id="email" placeholder="example@email.com" required class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid email.
+                请填写有效邮箱地址。
             </div>
         </div>
 
         <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="number" step="1" name="phone" id="phone" placeholder="Phone" required class="form-control">
+            <label for="phone">电话号码</label>
+            <input type="tel" name="phone" id="phone" placeholder="13800138000" maxlength="11" required class="form-control">
             <div class="invalid-feedback">
-                Please provide a valid phone number.
+                请填写有效电话号码（最多11位）。
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-4">Add Customer</button>
+        <button type="submit" class="btn btn-primary mt-4">新增客户</button>
     </form>
 </div>
 

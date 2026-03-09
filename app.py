@@ -12,7 +12,72 @@ app.secret_key = 'sdfiweksdifwerijsdkfjiwe'
 dbconn = None
 connection = None
 
+# 登录管理器
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
+# 用户类
+class User(UserMixin):
+    def __init__(self, id, username, role):
+        self.id = id
+        self.username = username
+        self.role = role
+
+@login_manager.user_loader
+def load_user(user_id):
+    cursor = getCursor()
+    cursor.execute("SELECT id, username, role FROM users WHERE id = %s", (user_id,))
+    user_row = cursor.fetchone()
+    if user_row:
+        return User(user_row[0], user_row[1], user_row[2])
+    return None
+
+# 登录页
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        cursor = getCursor()
+        cursor.execute("SELECT id, username, password, role FROM users WHERE username = %s", (username,))
+        user_row = cursor.fetchone()
+        
+        if user_row and user_row[2] == password:  # 简单密码验证
+            user = User(user_row[0], user_row[1], user_row[3])
+            login_user(user)
+            flash('登录成功！', 'success')
+            return redirect(url_for('home'))
+        flash('用户名或密码错误！', 'error')
+    
+    return render_template('login.html')
+
+# 登出
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('已退出登录', 'success')
+    return redirect(url_for('login'))
+
+# 角色装饰器
+from functools import wraps
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.role != 'admin':
+            flash('需要管理员权限！', 'error')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# 保护管理员路由
+@app.route('/admin')
+@login_required
+@admin_required
+def admin_home():
+    return redirect(url_for('admin_customers'))
+    
 def getCursor():
     global dbconn
     global connection

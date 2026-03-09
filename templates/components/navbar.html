@@ -1,41 +1,83 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">安途汽车配件商店管理系统</a>
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold fs-4" href="#">
+            🚗 安途汽车配件商店
+            <span class="badge bg-danger ms-1">管理系统</span>
+        </a>
+        
+        <!-- 汉堡菜单按钮 -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="切换导航">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
+        <!-- 导航菜单 -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- 技术员界面 -->
                 {% if 'admin' not in request.url %}
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">当前工单</a>
+                    <a class="nav-link active px-3 py-2 rounded-pill mx-1" 
+                       aria-current="page" href="{{ url_for('home') }}">
+                        📋 当前工单
+                    </a>
                 </li>
                 {% endif %}
+                
+                <!-- 管理员界面 -->
                 {% if 'admin' in request.url %}
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin_customers') }}">客户管理</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3 py-2 rounded-pill mx-1 active" href="#" 
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        👥 客户管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('admin_customers') }}">客户列表</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('add_customer') }}">新增客户</a></li>
+                    </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('add_customer') }}">新增客户</a>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3 py-2 rounded-pill mx-1" href="#" 
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        🛠️ 项目管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('service') }}">新增服务</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('part') }}">新增配件</a></li>
+                    </ul>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('service') }}">新增服务</a>
+                    <a class="nav-link px-3 py-2 rounded-pill mx-1" href="{{ url_for('schedule_job') }}">
+                        📅 预约工单
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('part') }}">新增配件</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('schedule_job') }}">预约工单</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('admin_bills') }}">未付账单</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('billing_history') }}">账单历史</a>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3 py-2 rounded-pill mx-1" href="#" 
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        💰 财务管理
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('admin_bills') }}">未付账单</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('billing_history') }}">账单历史</a></li>
+                    </ul>
                 </li>
                 {% endif %}
             </ul>
+            
+            <!-- 状态指示器 -->
+            {% if 'admin' not in request.url %}
+            <span class="navbar-text me-3">
+                <span class="badge bg-warning text-dark fs-6">技术员模式</span>
+            </span>
+            {% else %}
+            <span class="navbar-text me-3">
+                <span class="badge bg-success fs-6">管理员模式</span>
+            </span>
+            {% endif %}
         </div>
     </div>
 </nav>
